@@ -1,9 +1,9 @@
-FROM python:3.4.3-onbuild
-MAINTAINER Ivan Pedrazas "ipedrazas@gmail.com"
+FROM python:3.4.6-onbuild
+MAINTAINER Hulab "maxime@mapstr.com"
 
 ENV DEBIAN_FRONTEND noninteractive
 
-COPY docker-settings.py /usr/src/app/taiga-back/settings/local.py
+COPY local.docker.py /usr/src/app/taiga-back/settings/local.py
 COPY locale.gen /etc/locale.gen
 COPY default.locale /etc/default/locale
 

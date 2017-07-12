@@ -1,18 +1,41 @@
-postgres:
+version: "3"
+
+networks:
+  taiga-nw:
+      driver: bridge
+
+services:
+  taiga-db:
     image: postgres
+    container_name: taiga-db
+    volumes:
+      - ./taiga/db:/var/lib/postgresql/data
 
-taigaback:
-    image: ipedrazas/taiga-back
-    links:
-        - postgres:postgres
-    ports:
-        - "8000:8000"
-
-taigafront:
-    image: ipedrazas/taiga-front
-    links:
-        - taigaback:taiga-back
-    ports:
-        - "80:80"
+  taiga-back:
+    build: ./backend
+    container_name: taiga-back
+    depends_on:
+      - taiga-db
+    volumes:
+      - ./taiga/media:/usr/src/app/taiga-back/media
+      - ./taiga/config:/usr/src/app/taiga-back/settings
     environment:
-        - "API_NAME=boot2docker"
+      API_NAME: localhost
+    ports:
+      - 8000:8000
+    networks:
+      - taiga-nw
+
+  taiga-front:
+    build: ./frontend
+    container_name: taiga-front
+    depends_on:
+      - taiga-back
+    ports:
+      - 8080:80
+    volumes:
+      - ./taiga/config/conf.json:/taiga/conf.json
+    environment:
+      API_NAME: localhost
+    networks:
+      - taiga-nw
